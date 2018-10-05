@@ -15,6 +15,8 @@ int hash(HashTable *table, char* key) {
     int c;
     while(c = *key++)
         hash = ((hash << 5) + hash) + c;
+    if(hash < 0)
+        hash *= -1;
     return hash % table->size;
 }
 DataItem *search(HashTable *table, char *key) {
@@ -56,9 +58,8 @@ int isPrime(int n) {
 	}
 	return 1;
 }
-void insert(HashTable *table, char *key, int data) {
+void insert(HashTable *table, char *key, float data) {
     int hashIndex = hash(table, key);
-
     DataItem *item = (DataItem*)malloc(sizeof(DataItem));
     item->data = data;
     item->key = key;
@@ -102,23 +103,4 @@ void print(HashTable *table) {
             printf(" ~~ ");
         printf("\n");
     }
-}
-
-int main() {
-    HashTable *table = (HashTable*)malloc(sizeof(HashTable));
-    //printf("(key, value)\n");
-    initializeHashTable(table, 3);
-    
-    char *key = "help";
-    insert(table, key, 5);
-
-    key = "key";
-    insert(table, key, 5);
-
-    key = "keys";
-    insert(table, key, 5);
-    printf("uhhh\n");
-    print(table);
-
-    free(table);
 }

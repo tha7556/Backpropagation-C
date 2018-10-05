@@ -7,7 +7,7 @@
  * key: The key to locate the element in the HashTable 
  **/
 typedef struct DataItem_T {
-    double data;
+    float data;
     char *key;
 } DataItem;
 
@@ -41,7 +41,7 @@ DataItem *search(HashTable *table, char *key);
  * key: The string key to insert
  * data: The value that corresponds to the key
 **/
-void insert(HashTable *table, char *key, int data);
+void insert(HashTable *table, char *key, float data);
 /**
  * Deletes the Key, Value pair from the HashTable
  * table: A pointer to the HashTable
