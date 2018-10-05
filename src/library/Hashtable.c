@@ -67,8 +67,10 @@ void insert(HashTable *table, char *key, float data) {
         hashIndex++;
         hashIndex %= table->size;
     }    
-    if(table->elements[hashIndex] != NULL)
+    if(table->elements[hashIndex] != NULL) {
+        free(table->elements[hashIndex]->key);
         free(table->elements[hashIndex]);
+    }
     else
         table->count++;
     table->elements[hashIndex] = item;
@@ -93,6 +95,14 @@ void delete(HashTable *table, char *key) {
         }
         hashIndex++;
         hashIndex %= table->size;
+    }
+}
+void deleteAll(HashTable *table) {
+    for(int i = 0; i < table->size; i++) {
+        if(table->elements[i] != NULL) {
+            free(table->elements[i]->key);
+            free(table->elements[i]);
+        }
     }
 }
 void print(HashTable *table) {

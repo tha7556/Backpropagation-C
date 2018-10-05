@@ -49,6 +49,11 @@ void insert(HashTable *table, char *key, float data);
 **/
 void delete(HashTable *table, char *key);
 /**
+ * Deletes all of the values in the HashTable
+ * table: A pointer to the HashTable
+**/
+void deleteAll(HashTable *table);
+/**
  * Prints the HashTable to the console
  * table: A pointer to the HashTable
 **/
