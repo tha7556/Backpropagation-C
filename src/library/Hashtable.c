@@ -100,7 +100,8 @@ void delete(HashTable *table, char *key) {
 void deleteAll(HashTable *table) {
     for(int i = 0; i < table->size; i++) {
         if(table->elements[i] != NULL) {
-            free(table->elements[i]->key);
+            if(strcmp(table->elements[i]->key, NULL_ELEMENT) != 0)
+                free(table->elements[i]->key);
             free(table->elements[i]);
         }
     }
