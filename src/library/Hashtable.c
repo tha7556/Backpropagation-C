@@ -39,7 +39,6 @@ void resize(HashTable *table, int newSize) {
             delete(table, table->elements[i]->key);
         }
     }
-    print(table);
     table->elements = (DataItem**)realloc(table->elements, sizeof(DataItem*) * newSize);
     table->size = newSize;
     for(int i = 0; i < count; i++) {
@@ -68,7 +67,8 @@ void insert(HashTable *table, char *key, float data) {
         hashIndex %= table->size;
     }    
     if(table->elements[hashIndex] != NULL) {
-        free(table->elements[hashIndex]->key);
+        if(strcmp(table->elements[hashIndex]->key, NULL_ELEMENT) != 0)
+            free(table->elements[hashIndex]->key);
         free(table->elements[hashIndex]);
     }
     else
