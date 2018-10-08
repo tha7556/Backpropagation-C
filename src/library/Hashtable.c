@@ -9,6 +9,9 @@ void initializeHashTable(HashTable *table, int size) {
     table->size = size;
     table->count = 0;
     table->elements = (DataItem**)malloc(sizeof(DataItem*) * size);
+    for(int i = 0; i < size; i++) {
+        table->elements[i] = NULL;
+    }
 }
 int hash(HashTable *table, char* key) {
     int hash = 5381;
@@ -30,11 +33,12 @@ DataItem *search(HashTable *table, char *key) {
     return NULL;
 }
 void resize(HashTable *table, int newSize) {
+    printf("Resizing to: %d\n", newSize);
     int count = table->count;
     DataItem *temp = (DataItem*)malloc(sizeof(DataItem) * table->count);
     int j = 0;
     for(int i = 0; i < table->size && j < count; i++) {
-        if(table->elements[i] != NULL) {
+        if(table->elements[i] != NULL && strcmp(table->elements[i]->key, NULL_ELEMENT) != 0) {
             temp[j++] = *table->elements[i];
             delete(table, table->elements[i]->key);
         }
@@ -57,16 +61,17 @@ int isPrime(int n) {
 	}
 	return 1;
 }
-void insert(HashTable *table, char *key, float data) {
+void insert(HashTable *table, char *key, double data) {
     int hashIndex = hash(table, key);
     DataItem *item = (DataItem*)malloc(sizeof(DataItem));
     item->data = data;
     item->key = key;
-    while(table->elements[hashIndex] != NULL && table->elements[hashIndex]->key != key && strcmp(table->elements[hashIndex]->key, NULL_ELEMENT) != 0) {
+    while(table->elements[hashIndex] != NULL && strcmp(table->elements[hashIndex]->key, key) != 0 && strcmp(table->elements[hashIndex]->key, NULL_ELEMENT) != 0) {
         hashIndex++;
         hashIndex %= table->size;
     }    
-    if(table->elements[hashIndex] != NULL) {
+    
+    if(table->elements[hashIndex] != NULL && strcmp(table->elements[hashIndex]->key, NULL_ELEMENT) != 0) {
         if(strcmp(table->elements[hashIndex]->key, NULL_ELEMENT) != 0)
             free(table->elements[hashIndex]->key);
         free(table->elements[hashIndex]);
@@ -108,7 +113,7 @@ void deleteAll(HashTable *table) {
 }
 void print(HashTable *table) {
     for(int i = 0; i < table->size; i++) {
-        if(table->elements[i] != NULL) 
+        if(table->elements[i] != NULL && strcmp(table->elements[i]->key, NULL_ELEMENT) != 0) 
             printf(" (%s,%.3f)", table->elements[i]->key, table->elements[i]->data);
         else
             printf(" ~~ ");
