@@ -4,6 +4,9 @@
 #include <time.h>
 #include <math.h>
 
+//The format that weights are named
+#define WEIGHT_FORMAT  "%s->%s"
+
 /**
  * Gets a random number between (-1, 1)
 **/
@@ -42,13 +45,13 @@ void initializeNetwork(Network *network, int inputs, int hidden, int outputs) {
         node.name = name;
         node.bias = &network->bias;
         char *biasName = (char*)malloc(sizeof(char) * 20);
-        sprintf(biasName, "%s->%s", name, network->bias.name);
+        sprintf(biasName, WEIGHT_FORMAT, name, network->bias.name);
         insert(network->weightMap, biasName, getRandomNumber());
         network->hiddenNodes[h] = node;
         //Initializing weights from input -> hidden
         for(int i = 0; i < inputs; i++) {
             char *weightName = (char*)malloc(sizeof(char) * 22);
-            sprintf(weightName, "%s->%s", network->inputNodes[i].name, name);
+            sprintf(weightName, WEIGHT_FORMAT, network->inputNodes[i].name, name);
             insert(network->weightMap, weightName, getRandomNumber());
         }
     }
@@ -60,20 +63,20 @@ void initializeNetwork(Network *network, int inputs, int hidden, int outputs) {
         node.name = name;
         node.bias = &network->bias;
         char *biasName = (char*)malloc(sizeof(char) * 20);
-        sprintf(biasName, "%s->%s", name, network->bias.name);
+        sprintf(biasName, WEIGHT_FORMAT, name, network->bias.name);
         insert(network->weightMap, biasName, getRandomNumber());
         network->outputNodes[o] = node;
         //Initializing weights from hidden -> output
         for(int h = 0; h < hidden; h++) {
             char *weightName = (char*)malloc(sizeof(char) * 22);
-            sprintf(weightName, "%s->%s", network->hiddenNodes[h].name, name);
+            sprintf(weightName, WEIGHT_FORMAT, network->hiddenNodes[h].name, name);
             insert(network->weightMap, weightName, getRandomNumber());
         }
     }
 }
 double getWeight(Network *network, Node *a, Node *b) {
     char key[30];
-    sprintf(key, "%s->%s", a->name, b->name);
+    sprintf(key, WEIGHT_FORMAT, a->name, b->name);
     DataItem *result = search(network->weightMap, key);
     if(result != NULL)
         return result->data;
@@ -88,7 +91,7 @@ double getWeight(Network *network, Node *a, Node *b) {
 **/
 void setWeight(Network *network, Node *a, Node *b, double value) {
     char *key = (char*)malloc(sizeof(char) * 30);
-    sprintf(key, "%s->%s", a->name, b->name);
+    sprintf(key, WEIGHT_FORMAT, a->name, b->name);
     insert(network->weightMap, key, value);
     double val = search(network->weightMap, key)->data;
 
