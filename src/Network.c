@@ -4,6 +4,9 @@
 #include <time.h>
 #include <math.h>
 
+/**
+ * Gets a random number between (-1, 1)
+**/
 double getRandomNumber() {
     if(rand() % 2 == 0)
         return ((rand() % 9) + 1) / 10.0;
@@ -76,6 +79,13 @@ double getWeight(Network *network, Node *a, Node *b) {
         return result->data;
     return -2;
 }
+/**
+ * Sets the weight between the two Nodes
+ * network: A pointer to the Network
+ * a: The first Node
+ * b: The second Node
+ * value: The value to set as the weight between the two Nodes
+**/
 void setWeight(Network *network, Node *a, Node *b, double value) {
     char *key = (char*)malloc(sizeof(char) * 30);
     sprintf(key, "%s->%s", a->name, b->name);
@@ -87,9 +97,18 @@ void enterInputs(Network *network, double *inputs) {
     for(int i = 0; i < network->inputSize; i++) 
         network->inputNodes[i].data = inputs[i];
 }
+/**
+ * The sigmoid function used for calculating the value of the hidden and output nodes
+ * x: The value to run through the sigmoid function
+**/
 double sigmoid(double x) {
     return 1.0 / (1.0 + exp(-x));
 }
+/**
+ * The derivative of the sigmoid function.
+ * Used for calculating the error of each Node
+ * x: The value to run through the sigmoid derivative function
+**/
 double sigmoidDerivative(double x) {
     return x * (1.0 - x);
 }
@@ -113,6 +132,10 @@ void runNetwork(Network *network) {
         network->outputNodes[o].data = data;
     }
 }
+/**
+ * Calculates the error of each Node, and returns the total error
+ * network: A pointer to the Network
+**/
 double calculateErrors(Network *network) {
     double totalError = 0.0;
     //Setting error of output nodes
@@ -133,6 +156,10 @@ double calculateErrors(Network *network) {
     totalError = totalError / (double)network->outputSize;
     return sqrt(totalError);
 }
+/**
+ * Calculates the new weights between each Node, based on the error of each Node
+ * network: A pointer to the Network
+**/
 void calculateNewWeights(Network *network) {
     for(int o = 0; o < network->outputSize; o++) {
         double newWeight = getWeight(network, &network->outputNodes[o], &network->bias) + (network->learningRate * network->outputNodes[o].error * network->bias.data);
@@ -236,9 +263,6 @@ int main() {
         runNetwork(network);
         printf("%.1f   %.1f   |   %.2f vs %.1f\n", trainingInputs[i][0], trainingInputs[i][1], network->outputNodes[0].data, trainingOutputs[i][0]);
     }
-
-
-
 
     //Cleanup
     cleanup(network);
