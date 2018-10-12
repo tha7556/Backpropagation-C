@@ -33,7 +33,6 @@ DataItem *search(HashTable *table, char *key) {
     return NULL;
 }
 void resize(HashTable *table, int newSize) {
-    printf("Resizing to: %d\n", newSize);
     int count = table->count;
     DataItem *temp = (DataItem*)malloc(sizeof(DataItem) * table->count);
     int j = 0;

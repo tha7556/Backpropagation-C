@@ -264,9 +264,9 @@ int main() {
     for(int i = 0; i < 4; i++) {
         enterInputs(network, trainingInputs[i]);
         runNetwork(network);
-        printf("%.1f   %.1f   |   %.2f vs %.1f\n", trainingInputs[i][0], trainingInputs[i][1], network->outputNodes[0].data, trainingOutputs[i][0]);
+        printf("%.1f   %.1f   |   %.1f\n", trainingInputs[i][0], trainingInputs[i][1], network->outputNodes[0].data);
     }
-
+    
     //Cleanup
     cleanup(network);
     for(int i = 0; i < 4; i++) {
