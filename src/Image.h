@@ -14,5 +14,7 @@ typedef struct Image_t {
 }Image;
 /**
  * Reads in an image and stores it in the image parameter
+ * image: A pointer to the image object
+ * path: The string leading to the image to read
 **/
 void readImage(Image *image, char *path);
