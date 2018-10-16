@@ -4,10 +4,10 @@
 #include <stdarg.h>
 #include "./Image.h"
 
-void readImage(Image *im, char *path) {
+void readImage(Image *image, char *path) {
     //Checking input is not null
-    if(!im) {
-        printf("The image cannot be null\n");
+    if(!image) {
+        printf("The Image cannot be null\n");
         return;
     }
     if(!path) {
@@ -21,7 +21,7 @@ void readImage(Image *im, char *path) {
         return;
     }
     //Initializing variables needed for interpreting the image
-    png_structp image;
+    png_structp pngPtr;
     png_infop info;
     png_uint_32 width;
     png_uint_32 height;
@@ -31,48 +31,48 @@ void readImage(Image *im, char *path) {
     int compressionMethod;
     int filterMethod;
     png_bytepp rows;
-    //Reading the Image
-    image = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-    if(!image) {
+    //Reading the image
+    pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if(!pngPtr) {
         printf("Cannot read image at: %s\n", path);
         return;
     }
-    info = png_create_info_struct(image);
+    info = png_create_info_struct(pngPtr);
     if(!info) {
         printf("Cannot read image info at: %s\n", path);
         return;
     }
-    png_init_io(image, file);
-    png_read_png(image, info, 0, 0);
-    png_get_IHDR(image, info, &width, &height, &bitDepth, &colorType, &interlaceMethod, &compressionMethod, &filterMethod);
-    rows = png_get_rows(image, info);
-    int rowbytes = png_get_rowbytes(image, info);
+    png_init_io(pngPtr, file);
+    png_read_png(pngPtr, info, 0, 0);
+    png_get_IHDR(pngPtr, info, &width, &height, &bitDepth, &colorType, &interlaceMethod, &compressionMethod, &filterMethod);
+    rows = png_get_rows(pngPtr, info);
+    int rowbytes = png_get_rowbytes(pngPtr, info);
 
     //Setting the pixel values
-    im->pixels = (Pixel**)malloc(sizeof(Pixel*) * height);
+    image->pixels = (Pixel**)malloc(sizeof(Pixel*) * height);
     for(int i = 0; i < height; i++) {
-        im->pixels[i] = (Pixel*)malloc(sizeof(Pixel) * width);
+        image->pixels[i] = (Pixel*)malloc(sizeof(Pixel) * width);
         for(int j = 0, x = 0, index = 0; j < rowbytes; j++, x++) {
             if(x == 4) {
                 x = 0;
                 index++;
             }
             if(x == 0)
-                im->pixels[i][index].red = rows[i][j];
+                image->pixels[i][index].red = rows[i][j];
             else if(x == 1)
-                im->pixels[i][index].green = rows[i][j];
+                image->pixels[i][index].green = rows[i][j];
             else if(x == 2)
-                im->pixels[i][index].blue = rows[i][j];
+                image->pixels[i][index].blue = rows[i][j];
             else if(x == 3)
-                im->pixels[i][index].alpha = rows[i][j];
+                image->pixels[i][index].alpha = rows[i][j];
         }
     }
-    im->width = width;
-    im->height = height;
+    image->width = width;
+    image->height = height;
     
     //Cleaning up
     fclose(file);
-    png_destroy_read_struct(&image, &info, 0);
+    png_destroy_read_struct(&pngPtr, &info, 0);
 }
 int main() {
     char *png = "../images/X.png";
