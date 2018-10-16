@@ -21,16 +21,16 @@ void readImage(Image *image, char *path) {
         return;
     }
     //Initializing variables needed for interpreting the image
-    png_structp pngPtr;
-    png_infop info;
-    png_uint_32 width;
-    png_uint_32 height;
+    png_struct *pngPtr;
+    png_info *info;
+    unsigned int width;
+    unsigned int height;
     int bitDepth;
     int colorType;
     int interlaceMethod;
     int compressionMethod;
     int filterMethod;
-    png_bytepp rows;
+    png_byte **rows;
     //Reading the image
     pngPtr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
     if(!pngPtr) {
