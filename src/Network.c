@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <math.h>
+#include "./Image.h"
 
 //The format that weights are named
 #define WEIGHT_FORMAT  "%s->%s"
@@ -182,10 +183,8 @@ void calculateNewWeights(Network *network) {
         }
     }
 }
-void train(Network *network, double **trainingInputs, double **trainingOutputs, double targetError) {
+void train(Network *network, double **trainingInputs, double **trainingOutputs, double targetError, int numInputs, int numOutputs) {
     double error = 999.9;
-    int numInputs = sizeof(trainingInputs) / network->inputSize;
-    int numOutputs = sizeof(trainingOutputs) / network->outputSize;
     double *inputs;
     double *outputs;
     int j = 0;
@@ -199,7 +198,7 @@ void train(Network *network, double **trainingInputs, double **trainingOutputs, 
         runNetwork(network); 
         error = calculateErrors(network);
         calculateNewWeights(network);
-        if(j % 1000 == 0)
+        if(j % 10 == 0)
             printf("%.20lf\r", error);
         j++;
     }
@@ -233,38 +232,53 @@ int main() {
     srand(time(0));
     //Initializing network
     Network *network = (Network*)malloc(sizeof(Network));
-    initializeNetwork(network, 2, 3, 1);
+    initializeNetwork(network, 25, 25, 6);
     //Training
     double targetError = 0.000000000000001;
     printf("%.20lf - target\n", targetError);
-    double ** trainingInputs = (double**)malloc(sizeof(double*) * 4);
-    double ** trainingOutputs = (double**)malloc(sizeof(double*) * 4);
-    for(int i = 0; i < 4; i++) {
-        trainingInputs[i] = (double*)malloc(sizeof(double) * 2);
-        trainingOutputs[i] = (double*)malloc(sizeof(double) * 1);
+
+    char *files[6];
+    files[0] = "../images/X.png";
+    files[1] = "../images/Backslash.png";
+    files[2] = "../images/Forwardslash.png";
+    files[3] = "../images/Line.png";
+    files[4] = "../images/Plus.png";
+    files[5] = "../images/Minus.png";
+    Image images[6];
+    for(int i = 0; i < 6; i++) {
+        readImage(&images[i], files[i]);
     }
-    trainingInputs[0][0] = 0.1;
-    trainingInputs[0][1] = 0.1;
-    trainingOutputs[0][0] = 0.1;
+    double **trainingInputs = (double**)malloc(sizeof(double*) * 6);
+    double **trainingOutputs = (double**)malloc(sizeof(double*) * 6);
+    for(int i = 0; i < 6; i++) {
+        trainingInputs[i] = (double*)malloc(sizeof(double) * 25);
+        trainingOutputs[i] = (double*)malloc(sizeof(double) * 6);
+        for(int j = 0; j < 6; j++) {
+            if(i == j)
+                trainingOutputs[i][j] = .9;
+            else
+                trainingOutputs[i][j] = .1;
+        }
+        int index = 0;
+        for(int j = 0; j < images[i].height; j++) {
+            for(int y = 0; y < images[i].width; y++) {
+                trainingInputs[i][index] = images[i].pixels[j][y].red;
+                index++;
+            }
+        }
+    }
+    train(network, trainingInputs, trainingOutputs, targetError, 6, 6);
 
-    trainingInputs[1][0] = 0.1;
-    trainingInputs[1][1] = 0.9;
-    trainingOutputs[1][0] = 0.9;
-
-    trainingInputs[2][0] = 0.9;
-    trainingInputs[2][1] = 0.1;
-    trainingOutputs[2][0] = 0.9;
-
-    trainingInputs[3][0] = 0.9;
-    trainingInputs[3][1] = 0.9;
-    trainingOutputs[3][0] = 0.1;
-    train(network, (double**)trainingInputs, (double**)trainingOutputs, targetError);
-
-    //Testing
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 6; i++) {
+        printf("Trying: '%s'\n", files[i]);
         enterInputs(network, trainingInputs[i]);
         runNetwork(network);
-        printf("%.1f   %.1f   |   %.1f\n", trainingInputs[i][0], trainingInputs[i][1], network->outputNodes[0].data);
+        for(int j = 0; j < 6; j++) {
+            if(network->outputNodes[j].data < .5)
+                printf("\tfalse %s\n", files[j]);
+            else
+                printf("\ttrue %s\n", files[j]);
+        }
     }
     
     //Cleanup

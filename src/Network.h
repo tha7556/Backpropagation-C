@@ -48,7 +48,7 @@ void runNetwork(Network *network);
  * trainingOutputs: An array of each set of outputs that correspond to the inputs
  * targetError: The minimum error before training can stop 
 */
-void train(Network *network, double **trainingInputs, double **trainingOutputs, double targetError);
+void train(Network *network, double **trainingInputs, double **trainingOutputs, double targetError, int numInputs, int numOutputs);
 /**
  * Frees all of the Nodes, the hashtable containing the weights, and the network itself.
 **/

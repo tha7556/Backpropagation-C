@@ -74,7 +74,7 @@ void readImage(Image *image, char *path) {
     fclose(file);
     png_destroy_read_struct(&pngPtr, &info, 0);
 }
-int main() {
+/*int main() {
     char *png = "../images/X.png";
     Image img;
     readImage(&img, png);
@@ -95,4 +95,4 @@ int main() {
         free(img.pixels[i]);
     }
     free(img.pixels);
-}
+}*/

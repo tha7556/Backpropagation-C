@@ -1,9 +1,10 @@
-
+#ifndef IMAGE_H
+#define IMAGE_H
 /**
  * An object containing information about a pixel of an Image
 **/
 typedef struct Pixel_t {
-    float red, green, blue, alpha;
+    double red, green, blue, alpha;
 }Pixel;
 /**
  * An Image object composed of Pixels
@@ -18,3 +19,5 @@ typedef struct Image_t {
  * path: The string leading to the image to read
 **/
 void readImage(Image *image, char *path);
+
+#endif
