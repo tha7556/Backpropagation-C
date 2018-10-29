@@ -4,6 +4,7 @@
 #include <time.h>
 #include <math.h>
 #include "./Image.h"
+#include <string.h>
 
 //The format that weights are named
 #define WEIGHT_FORMAT  "%s->%s"
@@ -81,7 +82,7 @@ double getWeight(Network *network, Node *a, Node *b) {
     DataItem *result = search(network->weightMap, key);
     if(result != NULL)
         return result->data;
-    return -2;
+    return -2; //Don't remember why this is -2 vs -1, TODO
 }
 /**
  * Sets the weight between the two Nodes
@@ -228,13 +229,15 @@ void cleanup(Network *network) {
     free(network);
 }
 
-int main() {
+int main() { //gcc Image.c ./library/Hashtable.c Network.c -o test.exe -lpng -lm -g
     srand(time(0));
     //Initializing network
     Network *network = (Network*)malloc(sizeof(Network));
+    #define NOISY_NUM 2
     initializeNetwork(network, 25, 25, 6);
     //Training
-    double targetError = 0.000000000000001;
+    double targetError = 0.0000000000000001;
+    //double targetError = 0.00001;
     printf("%.20lf - target\n", targetError);
 
     char *files[6];
@@ -244,17 +247,24 @@ int main() {
     files[3] = "../images/Line.png";
     files[4] = "../images/Plus.png";
     files[5] = "../images/Minus.png";
-    Image images[6];
+    Image images[6 * NOISY_NUM];
     for(int i = 0; i < 6; i++) {
-        readImage(&images[i], files[i]);
+        printf("%s\n", files[i]);
+        readImage(&images[i * NOISY_NUM], files[i]);
+        for(int j = 1; j < NOISY_NUM; j++) {
+            applyFilter(&images[i*NOISY_NUM + j - 1], &images[i*NOISY_NUM+j]);
+            char fileName[100];
+            sprintf(fileName, "../images/filtered/[%d].png", i*NOISY_NUM+j);
+            writeImage(fileName, &images[i*NOISY_NUM+j]);
+        }
     }
-    double **trainingInputs = (double**)malloc(sizeof(double*) * 6);
-    double **trainingOutputs = (double**)malloc(sizeof(double*) * 6);
-    for(int i = 0; i < 6; i++) {
+    double **trainingInputs = (double**)malloc(sizeof(double*) * 6 * NOISY_NUM);
+    double **trainingOutputs = (double**)malloc(sizeof(double*) * 6 * NOISY_NUM);
+    for(int i = 0; i < 6 * NOISY_NUM; i++) {
         trainingInputs[i] = (double*)malloc(sizeof(double) * 25);
         trainingOutputs[i] = (double*)malloc(sizeof(double) * 6);
         for(int j = 0; j < 6; j++) {
-            if(i == j)
+            if(i/4 == j)
                 trainingOutputs[i][j] = .9;
             else
                 trainingOutputs[i][j] = .1;
@@ -267,7 +277,7 @@ int main() {
             }
         }
     }
-    train(network, trainingInputs, trainingOutputs, targetError, 6, 6);
+    train(network, trainingInputs, trainingOutputs, targetError, 6 * NOISY_NUM, 6);
 
     for(int i = 0; i < 6; i++) {
         printf("Trying: '%s'\n", files[i]);
@@ -283,10 +293,10 @@ int main() {
     
     //Cleanup
     cleanup(network);
-    for(int i = 0; i < 4; i++) {
+    for(int i = 0; i < 6 * NOISY_NUM; i++) {
         free(trainingInputs[i]);
         free(trainingOutputs[i]);
     }
     free(trainingInputs);
     free(trainingOutputs);
-}
+} //TODO: ignore noise, resize images

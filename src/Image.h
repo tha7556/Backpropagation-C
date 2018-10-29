@@ -19,5 +19,6 @@ typedef struct Image_t {
  * path: The string leading to the image to read
 **/
 void readImage(Image *image, char *path);
-
+void applyFilter(Image *original, Image *newImage);
+void writeImage(char *filename, Image *image);
 #endif
